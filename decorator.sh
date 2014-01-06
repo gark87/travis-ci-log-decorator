@@ -1,7 +1,9 @@
 #! /bin/bash
 
-if [ -f $1.pl ]; then
-  eval "$*" | perl $1.pl
+dir=`dirname $0`
+echo $dir
+if [ -f $dir/$1.pl ]; then
+  eval "$*" | perl $dir/$1.pl
 else
-  eval "$*" | perl default.pl
+  eval "$*" | perl $dir/default.pl
 fi
