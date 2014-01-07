@@ -20,7 +20,7 @@ sub add_line($) {
   push @last, $line;
   if ($#last == THRESHOLD) {
     my $items = $states[0];
-    print "travis_fold:start:$items->[0].$count\r\n";
+    print "travis_fold:start:$items->[0]\n";
     $items->[2] = 1;
   }
   print shift @last if ($#last > THRESHOLD);
@@ -31,8 +31,7 @@ sub cleanup() {
   my $items = $states[0];
   if ($items) {
     if ($items->[2]) {
-      print "travis_fold:end:$items->[0].$count\r\n";
-      $count++;
+      print "travis_fold:end:$items->[0]\n";
     }
     $items->[2] = 0;
   }
@@ -66,11 +65,12 @@ sub building($) {
 while(<>) {
   if (/^ T E S T S/o) {
     cleanup();
-    unshift @states, ['junit', \&tests, 0]; 
+    unshift @states, ['junit.'.$count++, \&tests, 0]; 
   }
   if (/^\Q[INFO] Building\E/o) {
     cleanup();
-    unshift @states, ['building', \&building, 0];
+    shift @states;
+    unshift @states, ['building.'.$count++, \&building, 0];
   }
   if ($states[0]) {
     $states[0][1]->($_);
