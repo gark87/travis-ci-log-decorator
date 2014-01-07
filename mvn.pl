@@ -40,24 +40,25 @@ sub cleanup() {
 }
 
 sub tests($) {
-  my ($line) = @_;
+  my ($_) = @_;
   if (/^Running /o or /Failures: 0, Errors: 0,/o or /^ T E S T S/o or /^-{20}/o or /^\s*$/o) {
-    add_line($line);
+    add_line($_);
   } else {
     my $prev = pop @last;
     cleanup();
     print $prev if $prev;
-    print $line;
-    shift @states if (/^Results :/o); 
+    print $_;
+    shift @states if (/^Results :/o);
   }
 }
 
 sub building($) {
-  my ($line) = @_;
-  if (/^\Q[INFO]\E/ or /^Download(ing|ed):/) {
-    add_line($line);
+  my ($_) = @_;
+  if (/^\Q[INFO]\E(?! Reactor Summary:)/o or /^Download(ing|ed):/o or /^\d+\/\d+/o) {
+    add_line($_);
   } else {
     cleanup();
+    print $_;
     shift @states;
   }
 }
