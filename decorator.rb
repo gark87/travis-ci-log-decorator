@@ -13,7 +13,7 @@ module Travis
 	puts @lines.shift if (@lines.length > @threshold);
       end
       def end_fold!
-        @lines[0..-1].each { |line| puts line };
+        @lines[0...-1].each { |line| puts line };
 	puts "travis_fold:end:#{@name}" if (@lines.length == @threshold);
         puts @lines[-1];
         @lines = [];
@@ -35,7 +35,7 @@ module Travis
       def decorate!(command)
         pipe = IO.popen(command)
         while (line = pipe.gets)
-          line = remove_color(line) if @NO_COLOR;
+          line = Base.remove_color(line) if @NO_COLOR;
           state = @states[0];
 	  if (state)
             new_state = state.inner_state(line);
@@ -59,7 +59,7 @@ module Travis
         end
         cleanup!();
       end
-      def remove_color(line) 
+      def self.remove_color(line) 
         line.gsub(/\e(\[[0-9]*[mK]|M)/, '').gsub(/^\s+/, '');
       end
       def end_fold!
@@ -85,7 +85,7 @@ module Travis
           @prefix == extract_prefix(line)
         end
         def extract_prefix(line)
-          remove_color(line)[0 .. LENGTH];
+          Base.remove_color(line)[0 .. LENGTH];
         end
       end
       def default_state(line)
@@ -137,7 +137,7 @@ module Travis
       end
     end
     default = Default.new;
-    types = { 'cat' => JVM::Maven.new };
+    types = { 'mvn' => JVM::Maven.new };
     (types[ARGV[0]] || default).decorate!(ARGV.join(' '));
   end
 end  
