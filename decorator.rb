@@ -41,21 +41,22 @@ module Travis
             new_state = state.inner_state(no_color);
             if (new_state) 
               @state.unshift(new_state)
+              next
             elsif (state.correct_line?(no_color))
               state.add_line!(line)
+              next
             else
               state.end_fold!
               @states.pop
             end 
-	  else
-            first_state = default_state(no_color);
-            if (first_state)
-              first_state.add_line!(line);
-              @states.push(first_state);
-            else
-              puts line;
-            end  
 	  end
+          first_state = default_state(no_color);
+          if (first_state)
+            first_state.add_line!(line);
+            @states.push(first_state);
+          else
+            puts line;
+          end  
         end
         cleanup!();
       end
@@ -118,7 +119,7 @@ module Travis
             @name = "building.#{count}"
           end
           def correct_line?(line)
-            line =~ /^(\[INFO\](?! Reactor Summary:)|Download(ing|ed):|\d+\/\d+)/
+            line =~ /^(\[INFO\](?! Reactor Summary:)|Download(ing|ed):|\d+\/\d+|\s*$)/
           end
           def inner_state(line)
             JUnitState.new(@count) if line =~ JUnitState.regex
@@ -137,7 +138,7 @@ module Travis
       end
     end
     default = Default.new;
-    types = { 'mvn' => JVM::Maven.new };
+    types = { 'cat' => JVM::Maven.new };
     (types[ARGV[0]] || default).decorate!(ARGV.join(' '));
   end
 end  
