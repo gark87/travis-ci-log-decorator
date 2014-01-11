@@ -35,20 +35,20 @@ module Travis
       def decorate!(command)
         pipe = IO.popen(command)
         while (line = pipe.gets)
-          line = Base.remove_color(line) if @NO_COLOR;
+          no_color = @NO_COLOR ? Base.remove_color(line) : line;
           state = @states[0];
 	  if (state)
-            new_state = state.inner_state(line);
+            new_state = state.inner_state(no_color);
             if (new_state) 
               @state.unshift(new_state)
-            elsif (state.correct_line?(line))
+            elsif (state.correct_line?(no_color))
               state.add_line!(line)
             else
               state.end_fold!
               @states.pop
             end 
 	  else
-            first_state = default_state(line);
+            first_state = default_state(no_color);
             if (first_state)
               first_state.add_line!(line);
               @states.push(first_state);
@@ -85,7 +85,7 @@ module Travis
           @prefix == extract_prefix(line)
         end
         def extract_prefix(line)
-          Base.remove_color(line)[0 .. LENGTH];
+          line[0 .. LENGTH];
         end
       end
       def default_state(line)
