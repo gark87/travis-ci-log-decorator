@@ -138,7 +138,7 @@ module Travis
       end
     end
     default = Default.new;
-    types = { 'cat' => JVM::Maven.new };
+    types = { 'mvn' => JVM::Maven.new };
     (types[ARGV[0]] || default).decorate!(ARGV.join(' '));
   end
 end  
