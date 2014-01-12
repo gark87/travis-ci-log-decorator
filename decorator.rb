@@ -119,7 +119,7 @@ module Travis
             @name = "building.#{count}"
           end
           def correct_line?(line)
-            line =~ /^(\[INFO\](?! Reactor Summary:)|Download(ing|ed):|\d+\/\d+|\s*$)/
+            line =~ /^(\[INFO\](?! (Reactor Summary:|Building))|Download(ing|ed):|\d+\/\d+|\s*$)/
           end
           def inner_state(line)
             JUnitState.new(@count) if line =~ JUnitState.regex
